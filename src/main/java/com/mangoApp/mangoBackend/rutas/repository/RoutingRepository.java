@@ -57,8 +57,18 @@ public class RoutingRepository {
             rs.getInt("quantity_units"),
             rs.getBigDecimal("pickup_lat"),
             rs.getBigDecimal("pickup_lng"),
-            rs.getBigDecimal("dropoff_lat"), // <-- NUEVO
-            rs.getBigDecimal("dropoff_lng")  // <-- NUEVO
-        ));
+            rs.getBigDecimal("dropoff_lat"), 
+            rs.getBigDecimal("dropoff_lng")  
+            ));
+    }
+    
+    public void assignTripToVehicle(Long orderId, Long vehicleId) {
+        // 1. La orden pasa a estar en tránsito
+        String updateOrder = "UPDATE orders SET status = 'IN_TRANSIT' WHERE id = ?";
+        jdbcTemplate.update(updateOrder, orderId);
+        
+        // 2. El camión se marca como ocupado para que no le salgan más viajes
+        String updateVehicle = "UPDATE vehicles SET is_available = 0 WHERE id = ?";
+        jdbcTemplate.update(updateVehicle, vehicleId);
     }
 }

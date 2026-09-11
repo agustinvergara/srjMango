@@ -54,4 +54,9 @@ public class TripService {
         
         return trips;
     }
+    
+    public void acceptTrip(Long tripId, Long vehicleId) {
+        // Aquí podrías validar que la orden siga en PAID_ESCROW por si otro chofer la tomó 1 segundo antes
+        routingRepository.assignTripToVehicle(tripId, vehicleId);
+    }
 }

@@ -9,8 +9,8 @@ public record AvailableTripResponse(
     Integer requiredCanastillas,
     BigDecimal estimatedPayout, // Lo que gana el chofer
     Double distanceToPickupKm,
-    BigDecimal pickupLat,  // <-- NUEVO
-    BigDecimal pickupLng,  // <-- NUEVO
-    BigDecimal dropoffLat, // <-- NUEVO
-    BigDecimal dropoffLng  // <-- NUEVO
+    BigDecimal pickupLat,  
+    BigDecimal pickupLng,  
+    BigDecimal dropoffLat, 
+    BigDecimal dropoffLng  
 ) {}

@@ -27,8 +27,11 @@ public class TripController {
     }
 
     @PostMapping("/{tripId}/aceptar")
-    public ResponseEntity<Void> acceptTrip(@PathVariable Long tripId) {
-        // Lógica: Cambiar estado del trip a 'ASSIGNED' y marcar vehículo como no disponible
+    public ResponseEntity<Void> acceptTrip(
+            @PathVariable Long tripId, 
+            @RequestParam Long vehicleId) {
+        
+        tripService.acceptTrip(tripId, vehicleId);
         return ResponseEntity.ok().build();
     }
     
