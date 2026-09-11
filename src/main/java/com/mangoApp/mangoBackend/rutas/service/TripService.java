@@ -38,13 +38,17 @@ public class TripService {
                 BigDecimal payout = BigDecimal.valueOf(route.distanceKm() * 1.50);
                 
                 trips.add(new AvailableTripResponse(
-                    order.orderId(),
-                    order.producerName(),
-                    order.dropoffName(),
-                    order.units(),
-                    payout,
-                    Math.round(route.distanceKm() * 100.0) / 100.0
-                ));
+                        order.orderId(),
+                        order.producerName(),
+                        order.dropoffName(),
+                        order.units(),
+                        payout,
+                        Math.round(route.distanceKm() * 100.0) / 100.0,
+                        order.pickupLat(),   
+                        order.pickupLng(),   
+                        order.dropoffLat(),  
+                        order.dropoffLng()   
+                    ));
             }
         }
         

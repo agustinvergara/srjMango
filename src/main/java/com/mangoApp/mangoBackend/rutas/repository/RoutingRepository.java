@@ -38,13 +38,16 @@ public class RoutingRepository {
     public List<PendingTripDTO> findPendingOrders() {
         String sql = """
             SELECT o.id, t_prod.name as producer_name, t_buyer.name as buyer_name, 
-                   o.quantity_units, t_prod.lat as pickup_lat, t_prod.lng as pickup_lng
+                   o.quantity_units, 
+                   t_prod.lat as pickup_lat, t_prod.lng as pickup_lng,
+                   t_buyer.lat as dropoff_lat, t_buyer.lng as dropoff_lng
             FROM orders o
             JOIN products p ON o.product_id = p.id
             JOIN tenants t_prod ON p.tenant_id = t_prod.id
             JOIN tenants t_buyer ON o.buyer_tenant_id = t_buyer.id
             WHERE o.status = 'PAID_ESCROW'
               AND t_prod.lat IS NOT NULL
+              AND t_buyer.lat IS NOT NULL
         """;
         
         return jdbcTemplate.query(sql, (rs, rowNum) -> new PendingTripDTO(
@@ -53,7 +56,9 @@ public class RoutingRepository {
             rs.getString("buyer_name"),
             rs.getInt("quantity_units"),
             rs.getBigDecimal("pickup_lat"),
-            rs.getBigDecimal("pickup_lng")
+            rs.getBigDecimal("pickup_lng"),
+            rs.getBigDecimal("dropoff_lat"), // <-- NUEVO
+            rs.getBigDecimal("dropoff_lng")  // <-- NUEVO
         ));
     }
 }

@@ -8,5 +8,7 @@ public record PendingTripDTO(
     String dropoffName, 
     Integer units, 
     BigDecimal pickupLat, 
-    BigDecimal pickupLng
+    BigDecimal pickupLng,
+    BigDecimal dropoffLat, 
+    BigDecimal dropoffLng  
 ) {}

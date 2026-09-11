@@ -8,5 +8,9 @@ public record AvailableTripResponse(
     String dropoffLocationName,
     Integer requiredCanastillas,
     BigDecimal estimatedPayout, // Lo que gana el chofer
-    Double distanceToPickupKm
+    Double distanceToPickupKm,
+    BigDecimal pickupLat,  // <-- NUEVO
+    BigDecimal pickupLng,  // <-- NUEVO
+    BigDecimal dropoffLat, // <-- NUEVO
+    BigDecimal dropoffLng  // <-- NUEVO
 ) {}
