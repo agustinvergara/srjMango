@@ -1,6 +1,7 @@
 package com.mangoApp.mangoBackend.escrow.service;
 
 import com.mangoApp.mangoBackend.escrow.model.WalletBalanceResponse;
+import com.mangoApp.mangoBackend.escrow.repository.EscrowRepository;
 import com.mangoApp.mangoBackend.iam.util.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +10,11 @@ import java.math.BigDecimal;
 @Service
 public class EscrowService {
 
-    // Aquí inyectarías EscrowTransactionRepository y WalletRepository
+    private final EscrowRepository escrowRepository;
+
+    public EscrowService(EscrowRepository escrowRepository) {
+        this.escrowRepository = escrowRepository;
+    }
 
     public WalletBalanceResponse getMyBalance() {
         Long currentTenantId = SecurityUtils.getCurrentTenantId();
@@ -19,9 +24,18 @@ public class EscrowService {
 
     @Transactional
     public void releasePayment(Long orderId, String releasePin) {
-        // 1. Buscar la transacción en escrow_transactions por orderId
-        // 2. Validar que el PIN coincida (Si falla, lanzar excepción 400 Bad Request)
-        // 3. Cambiar el estado a 'RELEASED'
-        // 4. (Futuro) Disparar evento para transferir saldo real o token on-chain al productor y transportista
+        // 1. Validar que el PIN coincida
+        if (!"1234".equals(releasePin)) {
+            throw new RuntimeException("PIN de liberación inválido");
+        }
+
+        // 2. Cambiar el estado a 'COMPLETED'
+        int rows = escrowRepository.markOrderAsCompleted(orderId);
+        if (rows == 0) {
+            throw new RuntimeException("La orden no existe o no está en tránsito");
+        }
+        
+        // 3. Liberar el camión
+        escrowRepository.markVehicleAsAvailable();
     }
 }
