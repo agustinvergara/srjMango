@@ -1,6 +1,8 @@
 package com.mangoApp.mangoBackend.marketplace.perecederos.service;
 
 import com.mangoApp.mangoBackend.iam.util.SecurityUtils;
+import java.util.List;
+import java.util.Map;
 import com.mangoApp.mangoBackend.marketplace.perecederos.model.Product;
 import com.mangoApp.mangoBackend.marketplace.perecederos.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -33,5 +35,9 @@ public class ProductService {
         
         // 3. Persistimos
         productRepository.save(productToSave);
+    }
+    
+    public List<Map<String, Object>> getAvailableProducts() {
+        return productRepository.findAllAvailable();
     }
 }

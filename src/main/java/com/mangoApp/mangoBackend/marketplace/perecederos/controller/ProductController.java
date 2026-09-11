@@ -1,6 +1,8 @@
 package com.mangoApp.mangoBackend.marketplace.perecederos.controller;
 
 import com.mangoApp.mangoBackend.marketplace.perecederos.model.Product;
+import java.util.Map;
+import java.util.List;
 import com.mangoApp.mangoBackend.marketplace.perecederos.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,5 +21,10 @@ public class ProductController {
     public ResponseEntity<Void> publishProduct(@RequestBody Product product) {
         productService.publishProduct(product);
         return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping("/list")
+    public ResponseEntity<List<Map<String, Object>>> listProducts() {
+        return ResponseEntity.ok(productService.getAvailableProducts());
     }
 }
