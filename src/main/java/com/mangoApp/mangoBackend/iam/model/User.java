@@ -6,7 +6,8 @@ public record User(
 	    String email,
 	    String passwordHash,
 	    String role,
-	    Boolean isVerified
+	    Boolean isVerified,
+        String fullName,
+        String phone
 		) {
-
 }

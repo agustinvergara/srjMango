@@ -7,5 +7,9 @@ public record Tenant(
 		String businessType,
 	    String ruc,
 	    Boolean isActive,
-	    LocalDateTime createdAt
+	    LocalDateTime createdAt,
+        String province,
+        String farmName,
+        String cropsDescription,
+        Boolean hasRefrigeration
 	    ) {}

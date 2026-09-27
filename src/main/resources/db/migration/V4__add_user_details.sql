@@ -1,0 +1,7 @@
+ALTER TABLE users ADD COLUMN full_name VARCHAR(150);
+ALTER TABLE users ADD COLUMN phone VARCHAR(50);
+
+ALTER TABLE tenants ADD COLUMN province VARCHAR(100);
+ALTER TABLE tenants ADD COLUMN farm_name VARCHAR(150);
+ALTER TABLE tenants ADD COLUMN crops_description TEXT;
+ALTER TABLE tenants ADD COLUMN has_refrigeration BOOLEAN DEFAULT FALSE;
