@@ -1,5 +1,6 @@
 package com.mangoApp.mangoBackend.iam.security;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,13 @@ import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JwtService jwtService;
+
+    public JwtAuthenticationFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
+
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -22,15 +30,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             
-            // Lógica MVP: Aquí iría el parseo real con io.jsonwebtoken.
-            // Para poder avanzar sin frenarnos, mockeamos la extracción:
-            Long tenantId = 1L; 
-            String email = "productor@finca.com"; 
+            try {
+                Claims claims = jwtService.extractAllClaims(jwt);
+                Long tenantId = claims.get("tenantId", Long.class);
+                String email = claims.getSubject();
 
-            UserPrincipal principal = new UserPrincipal(1L, tenantId, email, "", Collections.emptyList());
-            var authToken = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-            
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserPrincipal principal = new UserPrincipal(1L, tenantId, email, "", Collections.emptyList());
+                    var authToken = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (Exception e) {
+                // Token invalido o expirado
+            }
         }
         
         filterChain.doFilter(request, response);

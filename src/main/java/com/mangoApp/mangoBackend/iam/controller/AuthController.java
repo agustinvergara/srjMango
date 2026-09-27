@@ -6,7 +6,6 @@ import com.mangoApp.mangoBackend.iam.model.dto.RegisterRequest;
 import com.mangoApp.mangoBackend.iam.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,22 +22,19 @@ public class AuthController {
         if (request.password() == null || request.password().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        String mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock_" + UUID.randomUUID().toString().substring(0,8);
-        return ResponseEntity.ok(new AuthResponse(
-            mockToken, 
-            1L, 
-            "TRANSPORTISTA"
-        ));
+        try {
+            String[] result = authService.loginUser(request);
+            return ResponseEntity.ok(new AuthResponse(result[0], Long.parseLong(result[1]), result[2]));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build();
+        }
     }
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
         try {
             String[] result = authService.registerUser(request);
-            String token = result[0];
-            Long tenantId = Long.parseLong(result[1]);
-            String role = result[2];
-            return ResponseEntity.ok(new AuthResponse(token, tenantId, role));
+            return ResponseEntity.ok(new AuthResponse(result[0], Long.parseLong(result[1]), result[2]));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
