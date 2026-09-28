@@ -12,5 +12,9 @@ public record Product(
     BigDecimal basePricePerUnit,
     String unitType,
     Integer stockAvailable,
+    String description,
+    java.time.LocalDate expirationDate,
+    String conditionType,
+    java.util.List<String> photoUrls,
     LocalDateTime createdAt
 ) {}

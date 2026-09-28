@@ -20,16 +20,28 @@ public class ProductService {
         // 1. Obtenemos el Tenant ID del usuario autenticado (productor)
         Long currentTenantId = SecurityUtils.getCurrentTenantId();
         
+        String dbCategory = "OTHER";
+        if (requestDto.category() != null) {
+            String c = requestDto.category().toLowerCase();
+            if (c.contains("fruta")) dbCategory = "FRUIT";
+            else if (c.contains("vegetal")) dbCategory = "VEGETABLE";
+            else if (c.contains("tubérculo") || c.contains("tuberculo")) dbCategory = "ROOT";
+        }
+
         // 2. Construimos el modelo final forzando el tenant y las reglas de negocio
         Product productToSave = new Product(
             null, // El ID lo autogenera la BD
             currentTenantId,
             requestDto.name(),
-            requestDto.category(),
+            dbCategory,
             requestDto.requiresRefrigeration(),
             requestDto.basePricePerUnit(),
             requestDto.unitType() != null ? requestDto.unitType() : "CANASTILLA_20KG", // Valor por defecto
             requestDto.stockAvailable(),
+            requestDto.description(),
+            requestDto.expirationDate(),
+            requestDto.conditionType(),
+            requestDto.photoUrls(),
             null // El timestamp lo autogenera la BD
         );
         
