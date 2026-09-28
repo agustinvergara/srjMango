@@ -33,17 +33,17 @@ public class AuthService {
     @Transactional
     public String[] registerUser(RegisterRequest req) {
         String reqRole = req.role() != null ? req.role().toLowerCase() : "";
-        String businessType = "productor".equals(reqRole) ? "PRODUCER" : "CARRIER";
-        String dbRole = "productor".equals(reqRole) ? "FARMER" : "DRIVER";
+        String businessType = "productor".equals(reqRole) ? "PRODUCER" : "minisuper".equals(reqRole) ? "BUYER" : "CARRIER";
+        String dbRole = "productor".equals(reqRole) ? "FARMER" : "minisuper".equals(reqRole) ? "STORE_MANAGER" : "DRIVER";
 
         String farmName = null, province = null, crops = null;
         Boolean hasRefrigeration = false;
 
         if (req.profile() != null) {
-            farmName = req.profile().farmName();
+            farmName = req.profile().farmName() != null ? req.profile().farmName() : req.profile().address();
             province = req.profile().province();
-            crops = req.profile().crops();
-            hasRefrigeration = req.profile().hasRefrigeration();
+            crops = req.profile().crops() != null ? req.profile().crops() : req.profile().businessType();
+            hasRefrigeration = req.profile().hasRefrigeration() != null ? req.profile().hasRefrigeration() : false;
         }
 
         Tenant tenant = new Tenant(
@@ -104,7 +104,7 @@ public class AuthService {
             throw new RuntimeException("Credenciales inválidas");
         }
         
-        String reqRole = "FARMER".equals(user.role()) ? "productor" : "transportista";
+        String reqRole = "FARMER".equals(user.role()) ? "productor" : "STORE_MANAGER".equals(user.role()) ? "minisuper" : "transportista";
         String token = jwtService.generateToken(user.tenantId(), user.email(), reqRole);
         return new String[]{token, String.valueOf(user.tenantId()), reqRole};
     }

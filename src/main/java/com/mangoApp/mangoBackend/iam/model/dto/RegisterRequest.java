@@ -19,6 +19,8 @@ public record RegisterRequest(
         String plate,
         Integer capacityKg,
         String license,
-        Boolean refrigerated
+        Boolean refrigerated,
+        String businessType,
+        String address
     ) {}
 }
