@@ -51,9 +51,16 @@ public class ProductRepository {
     
     public List<Map<String, Object>> findAllAvailable() {
         String sql = """
-            SELECT p.id, p.name, p.category, p.base_price_per_unit, p.stock_available, 
-                   p.unit_type, p.description, p.expiration_date, p.condition_type, p.photo_urls,
-                   t.name as producer_name 
+            SELECT p.id, p.name, p.category, 
+                   p.base_price_per_unit as "basePricePerUnit", 
+                   p.stock_available as "stockAvailable", 
+                   p.unit_type as "unit", 
+                   p.description, 
+                   p.expiration_date as "expirationDate", 
+                   p.condition_type as "condition", 
+                   p.photo_urls as "photoUrls",
+                   p.requires_refrigeration as "requiresRefrigeration",
+                   t.name as "producer" 
             FROM products p 
             JOIN tenants t ON p.tenant_id = t.id 
             WHERE p.stock_available > 0
