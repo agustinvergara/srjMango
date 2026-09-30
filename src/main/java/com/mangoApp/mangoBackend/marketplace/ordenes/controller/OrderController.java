@@ -20,4 +20,10 @@ public class OrderController {
         orderService.processPurchase(request);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<Void> checkoutCart() {
+        orderService.checkoutCart();
+        return ResponseEntity.ok().build();
+    }
 }
