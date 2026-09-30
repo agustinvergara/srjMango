@@ -12,4 +12,12 @@ public class SecurityUtils {
         }
         throw new IllegalStateException("No hay contexto de seguridad o tenant disponible");
     }
+
+    public static Long getCurrentUserId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal principal) {
+            return principal.id();
+        }
+        throw new IllegalStateException("No hay contexto de seguridad o usuario disponible");
+    }
 }

@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             
             try {
                 Claims claims = jwtService.extractAllClaims(jwt);
-                Long tenantId = claims.get("tenantId", Long.class);
+                Number tenantIdNum = claims.get("tenantId", Number.class);
+                Long tenantId = tenantIdNum != null ? tenantIdNum.longValue() : null;
                 String email = claims.getSubject();
 
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -41,7 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
-                // Token invalido o expirado
+                System.err.println("❌ Error validando JWT en JwtAuthenticationFilter: " + e.getMessage());
+                e.printStackTrace();
             }
         }
         
