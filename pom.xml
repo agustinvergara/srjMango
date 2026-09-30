@@ -136,6 +136,12 @@
 			<version>2.14.3</version>
 		</dependency>
 
+		<!-- AWS S3 (Native SDK to avoid Spring Boot 4.1.1 autoconfiguration conflicts) -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.25.11</version>
+		</dependency>
 	</dependencies>
 
 	<build>
