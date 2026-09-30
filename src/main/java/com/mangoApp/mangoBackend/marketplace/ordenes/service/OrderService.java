@@ -3,6 +3,7 @@ package com.mangoApp.mangoBackend.marketplace.ordenes.service;
 import com.mangoApp.mangoBackend.iam.util.SecurityUtils;
 import com.mangoApp.mangoBackend.marketplace.ordenes.model.dto.BuyProductRequest;
 import com.mangoApp.mangoBackend.marketplace.ordenes.repository.OrderRepository;
+import com.mangoApp.mangoBackend.marketplace.cart.repository.CartRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -11,27 +12,46 @@ import java.math.BigDecimal;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, CartRepository cartRepository) {
         this.orderRepository = orderRepository;
+        this.cartRepository = cartRepository;
     }
 
-    // Usamos @Transactional para que, si algo falla (ej. se cae la BD al crear la orden), 
-    // no se le reste el stock al productor por error (rollback automático).
     @Transactional
     public void processPurchase(BuyProductRequest request) {
-        // 1. Identificamos quién está comprando desde el JWT (Ej: el Minisuper)
         Long buyerTenantId = SecurityUtils.getCurrentTenantId();
+        processSingleItem(buyerTenantId, request.productId(), request.quantity());
+    }
 
-        // 2. Buscamos el precio real en BD y calculamos el total de forma segura
-        BigDecimal basePrice = orderRepository.getProductPrice(request.productId());
-        BigDecimal totalPrice = basePrice.multiply(BigDecimal.valueOf(request.quantity()));
+    @Transactional
+    public void checkoutCart() {
+        Long buyerTenantId = SecurityUtils.getCurrentTenantId();
+        
+        var items = cartRepository.getCartByTenant(buyerTenantId);
+        
+        if (items.isEmpty()) {
+            throw new RuntimeException("El carrito está vacío");
+        }
 
-        // 3. Ejecutamos la reducción de inventario y la creación de la orden
+        for (var item : items) {
+            Long productId = ((Number) item.get("productId")).longValue();
+            Integer quantity = ((Number) item.get("quantity")).intValue();
+            processSingleItem(buyerTenantId, productId, quantity);
+        }
+
+        cartRepository.clearCart(buyerTenantId);
+    }
+
+    private void processSingleItem(Long buyerTenantId, Long productId, Integer quantity) {
+        BigDecimal basePrice = orderRepository.getProductPrice(productId);
+        BigDecimal totalPrice = basePrice.multiply(BigDecimal.valueOf(quantity));
+
         orderRepository.createOrderAndUpdateStock(
-            request.productId(), 
+            productId, 
             buyerTenantId, 
-            request.quantity(), 
+            quantity, 
             totalPrice
         );
     }
